@@ -21,3 +21,11 @@ def get_archives(username: str) -> list:
     data = response.json()
     return data["archives"]
 
+def get_games_from_archive(archive_url: str) -> dict:
+    response = requests.get(archive_url, headers=HEADERS)
+    response.raise_for_status()
+
+    data = response.json()
+    return data["games"]
+
+
