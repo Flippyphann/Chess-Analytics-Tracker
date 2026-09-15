@@ -1,23 +1,16 @@
 import json
 
-from api.chesscom import get_player, get_archives, get_games_from_archive
+from parser.pgn_parser import parse_game
 
 USERNAME = "phillipphan11"
 
-player = get_player(USERNAME)
-archives = get_archives(USERNAME)
+with open(f"data/raw/{USERNAME}.json", "r", encoding="utf-8") as file:
+    games = json.load(file)
 
-all_games = []
+parsed_games = []
 
-for archive in archives:
-    games = get_games_from_archive(archive)
-    all_games.extend(games)
-
-print(f"Total games: {len(all_games)}")
-
-with open(f"data/raw/{USERNAME}.json", "w", encoding="utf-8") as file:
-    json.dump(all_games, file, indent=2)
+for game_data in games:
+    game = parse_game(game_data["pgn"])
+    parsed_games.append(game)
 
 
-print(player)
-print(archives)
