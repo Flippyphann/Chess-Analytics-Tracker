@@ -1,16 +1,27 @@
 import chess.pgn
 from io import StringIO
+from models.game import Game
+from models.move import Move
+
 
 def parse_game(pgn: str):
     game = chess.pgn.read_game(StringIO(pgn))
-    return game
 
-def get_moves(game):
     board = game.board()
     moves = []
 
-    for move in game.mainline_moves():
-        moves.append(board.san(move))
+    for move_number, move in enumerate(game.mainline_moves(), start=1):
+        san = board.san(move)
+        moves.append(Move(move_number, san))
         board.push(move)
 
-    return moves
+    return Game(
+        white=game.headers.get("White", ""),
+        black=game.headers.get("Black", ""),
+        result=game.headers.get("Result", ""),
+        date=game.headers.get("Date", ""),
+        time_control=game.headers.get("TimeControl", ""),
+        opening=game.headers.get("ECO", ""),
+        termination=game.headers.get("Termination", ""),
+        moves=moves
+    )
