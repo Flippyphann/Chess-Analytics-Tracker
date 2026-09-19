@@ -1,3 +1,4 @@
+from models.move import Move
 class Game:
     def __init__(
         self,
@@ -8,7 +9,7 @@ class Game:
         time_control: str,
         opening: str,
         termination: str,
-        moves: list[str]
+        moves: list[Move]
     ):
         self.white = white
         self.black = black
