@@ -53,10 +53,13 @@ def analyze_game(engine, game: Game):
         result_after = analyze_position(engine, board, not board.turn)
 
         # Calculates how much the evaluation changed, in pawns.
-        evaluation_loss = abs(
-            result_before["evaluation"].score(mate_score=100000)
-            - result_after["evaluation"].score(mate_score=100000)
+        evaluation_change = (
+            result_after["evaluation"].score(mate_score=100000)
+            - result_before["evaluation"].score(mate_score=100000)
         ) / 100
+
+        # Gets the absolute evaluation change.
+        evaluation_loss = abs(evaluation_change)
 
         # Classifies the move based on evaluation loss.
         move_classification = classify_move(evaluation_loss)
@@ -69,6 +72,7 @@ def analyze_game(engine, game: Game):
             "move_classification": move_classification,
             "best_evaluation": result_before["evaluation"],
             "your_evaluation": result_after["evaluation"],
+            "evaluation_change": evaluation_change,
             "evaluation_loss": evaluation_loss
         })
 
