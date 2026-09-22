@@ -19,3 +19,7 @@ def classify_move(evaluation_loss: float) -> str:
         return "mistake"
     else:
         return "blunder"
+
+# Checks if a move caused a significant evaluation change.
+def is_critical(evaluation_change: float) -> bool:
+    return abs(evaluation_change) >= 1.00

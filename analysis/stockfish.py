@@ -1,7 +1,7 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import is_best_move, classify_move
+from metrics.move_features import is_best_move, classify_move, is_critical
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -64,6 +64,9 @@ def analyze_game(engine, game: Game):
         # Classifies the move based on evaluation loss.
         move_classification = classify_move(evaluation_loss)
 
+        # Checks if the move caused a significant evaluation change.
+        is_critical_move = is_critical(evaluation_change)
+
         results.append({
             "move_number": move.move_number,
             "move": move.san,
@@ -73,7 +76,8 @@ def analyze_game(engine, game: Game):
             "best_evaluation": result_before["evaluation"],
             "your_evaluation": result_after["evaluation"],
             "evaluation_change": evaluation_change,
-            "evaluation_loss": evaluation_loss
+            "evaluation_loss": evaluation_loss,
+            "is_critical": is_critical_move,
         })
 
     return results
