@@ -12,7 +12,7 @@ def parse_game(pgn: str):
     board = game.board()
     moves = []
 
-    for move_number, move in enumerate(game.mainline_moves(), start=1):
+    for move_number, move in enumerate(game.mainline_moves(), start = 1):
         # Converts the move to Standard Algebraic Notation (SAN).
         san = board.san(move)
 
@@ -24,12 +24,12 @@ def parse_game(pgn: str):
 
     # Creates a Game object.
     return Game(
-        white=game.headers.get("White", ""),
-        black=game.headers.get("Black", ""),
-        result=game.headers.get("Result", ""),
-        date=game.headers.get("Date", ""),
-        time_control=game.headers.get("TimeControl", ""),
-        opening=game.headers.get("ECO", ""),
-        termination=game.headers.get("Termination", ""),
-        moves=moves
+        white = game.headers.get("White", ""),
+        black = game.headers.get("Black", ""),
+        result = game.headers.get("Result", ""),
+        date = game.headers.get("Date", ""),
+        time_control = game.headers.get("TimeControl", ""),
+        opening = game.headers.get("ECO", ""),
+        termination = game.headers.get("Termination", ""),
+        moves = moves
     )

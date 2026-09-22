@@ -13,20 +13,27 @@ def create_engine():
 
 # Analyzes the current position on the board.
 def analyze_position(engine, board: chess.Board, perspective: chess.Color):
-    result = engine.analyse(
+    results = engine.analyse(
         board,
-        chess.engine.Limit(depth=15)
+        chess.engine.Limit(depth = 15),
+        multipv = 3
     )
 
     # Grabs the best move recommended by Stockfish's principal variation (PV).
-    best_move = result["pv"][0]
+    best_move = results[0]["pv"][0]
 
     # Gets the evaluation from the player's perspective (White/Black).
-    evaluation = result["score"].pov(perspective)
+    evaluation = results[0]["score"].pov(perspective)
+
+    # Gets Stockfish's top 3 recommended moves.
+    top_moves = []
+    for result in results:
+        top_moves.append(result["pv"][0])
 
     return {
         "best_move": best_move,
-        "evaluation": evaluation
+        "evaluation": evaluation,
+        "top_moves": top_moves
     }
 
 # Analyzes every move in a game.
@@ -54,15 +61,18 @@ def analyze_game(engine, game: Game):
 
         # Calculates how much the evaluation changed, in pawns.
         evaluation_change = (
-            result_after["evaluation"].score(mate_score=100000)
-            - result_before["evaluation"].score(mate_score=100000)
+            result_after["evaluation"].score(mate_score = 100000)
+            - result_before["evaluation"].score(mate_score = 100000)
         ) / 100
 
         # Gets the absolute evaluation change.
         evaluation_loss = abs(evaluation_change)
 
         # Classifies the move based on evaluation loss.
-        move_classification = classify_move(evaluation_loss)
+        if is_best:
+            move_classification = "best"
+        else:
+            move_classification = classify_move(evaluation_loss)
 
         # Checks if the move caused a significant evaluation change.
         is_critical_move = is_critical(evaluation_change)

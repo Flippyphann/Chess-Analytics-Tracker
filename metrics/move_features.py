@@ -9,9 +9,7 @@ def is_best_move(board: chess.Board, move: str, best_move: chess.Move) -> bool:
 
 # Classifies a move based on evaluation loss.
 def classify_move(evaluation_loss: float) -> str:
-    if evaluation_loss < 0.10:
-        return "best"
-    elif evaluation_loss < 0.50:
+    if evaluation_loss < 0.50:
         return "good"
     elif evaluation_loss < 1.00:
         return "inaccuracy"
