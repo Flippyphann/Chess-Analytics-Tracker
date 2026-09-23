@@ -90,8 +90,8 @@ def analyze_game(engine, game: Game):
             - result_before["evaluation"].score(mate_score = 100000)
         ) / 100
 
-        # Gets the absolute evaluation change.
-        evaluation_loss = abs(evaluation_change)
+        # Gets how much the player's position worsened.
+        evaluation_loss = max(0.0, -evaluation_change)
 
         # Classifies the move based on evaluation loss.
         if is_best:
