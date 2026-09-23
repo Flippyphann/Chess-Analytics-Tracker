@@ -33,3 +33,7 @@ def is_top_5_move(board: chess.Board, move: str, top_moves: list[chess.Move]) ->
     played_move = board.parse_san(move)
 
     return played_move in top_moves
+
+# Checks if the player's position improved after the move.
+def is_improvement(evaluation_change: float) -> bool:
+    return evaluation_change > 0
