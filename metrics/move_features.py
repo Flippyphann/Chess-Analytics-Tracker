@@ -21,3 +21,9 @@ def classify_move(evaluation_loss: float) -> str:
 # Checks if a move caused a significant evaluation change.
 def is_critical(evaluation_change: float) -> bool:
     return abs(evaluation_change) >= 1.00
+
+# Checks if the player's move is one of Stockfish's top 3 moves.
+def is_top_3_move(board: chess.Board, move: str, top_moves: list[chess.Move]) -> bool:
+    played_move = board.parse_san(move)
+
+    return played_move in top_moves

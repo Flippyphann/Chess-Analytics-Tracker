@@ -1,7 +1,7 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import is_best_move, classify_move, is_critical
+from metrics.move_features import is_best_move, classify_move, is_critical, is_top_3_move
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -53,6 +53,13 @@ def analyze_game(engine, game: Game):
             result_before["best_move"]
         )
 
+        # Checks if played move is one of Stockfish's top 3 moves.
+        is_top_3 = is_top_3_move(
+            board,
+            move.san,
+            result_before["top_moves"]
+        )
+
         # Plays the player's move on the board.
         board.push_san(move.san)
 
@@ -82,12 +89,14 @@ def analyze_game(engine, game: Game):
             "move": move.san,
             "best_move": result_before["best_move"],
             "is_best_move": is_best,
+            "is_top_3_move": is_top_3,
             "move_classification": move_classification,
             "best_evaluation": result_before["evaluation"],
             "your_evaluation": result_after["evaluation"],
             "evaluation_change": evaluation_change,
             "evaluation_loss": evaluation_loss,
             "is_critical": is_critical_move,
+
         })
 
     return results
