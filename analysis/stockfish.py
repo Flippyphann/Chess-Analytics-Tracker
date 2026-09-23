@@ -1,7 +1,7 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import is_best_move, classify_move, is_critical, is_top_3_move
+from metrics.move_features import is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -16,7 +16,7 @@ def analyze_position(engine, board: chess.Board, perspective: chess.Color):
     results = engine.analyse(
         board,
         chess.engine.Limit(depth = 15),
-        multipv = 3
+        multipv = 5
     )
 
     # Grabs the best move recommended by Stockfish's principal variation (PV).
@@ -26,14 +26,25 @@ def analyze_position(engine, board: chess.Board, perspective: chess.Color):
     evaluation = results[0]["score"].pov(perspective)
 
     # Gets Stockfish's top 3 recommended moves.
-    top_moves = []
+    top_3_moves = []
+
     for result in results:
-        top_moves.append(result["pv"][0])
+        top_3_moves.append(result["pv"][0])
+
+        if len(top_3_moves) == 3:
+            break
+
+    # Gets Stockfish's top 5 recommended moves.
+    top_5_moves = []
+    for result in results:
+        top_5_moves.append(result["pv"][0])
+
 
     return {
         "best_move": best_move,
         "evaluation": evaluation,
-        "top_moves": top_moves
+        "top_3_moves": top_3_moves,
+        "top_5_moves": top_5_moves
     }
 
 # Analyzes every move in a game.
@@ -53,11 +64,18 @@ def analyze_game(engine, game: Game):
             result_before["best_move"]
         )
 
+        # Checks if played move is one of Stockfish's top 5 moves.
+        is_top_5 = is_top_5_move(
+            board,
+            move.san,
+            result_before["top_5_moves"]
+        )
+
         # Checks if played move is one of Stockfish's top 3 moves.
         is_top_3 = is_top_3_move(
             board,
             move.san,
-            result_before["top_moves"]
+            result_before["top_3_moves"]
         )
 
         # Plays the player's move on the board.
@@ -90,13 +108,13 @@ def analyze_game(engine, game: Game):
             "best_move": result_before["best_move"],
             "is_best_move": is_best,
             "is_top_3_move": is_top_3,
+            "is_top_5_move": is_top_5,
             "move_classification": move_classification,
             "best_evaluation": result_before["evaluation"],
             "your_evaluation": result_after["evaluation"],
             "evaluation_change": evaluation_change,
             "evaluation_loss": evaluation_loss,
             "is_critical": is_critical_move,
-
         })
 
     return results
