@@ -1,7 +1,7 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move, is_improvement
+from metrics.move_features import is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move, is_improvement, is_blunder
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -105,6 +105,10 @@ def analyze_game(engine, game: Game):
         # Checks if the player's position improved after the move.
         is_improvement_move = is_improvement(evaluation_change)
 
+        # Checks if the player's move is a blunder.
+        is_blunder_move = is_blunder(evaluation_loss)
+
+
         results.append({
             "move_number": move.move_number,
             "move": move.san,
@@ -118,7 +122,8 @@ def analyze_game(engine, game: Game):
             "evaluation_change": evaluation_change,
             "evaluation_loss": evaluation_loss,
             "is_critical": is_critical_move,
-            "is_improvement": is_improvement_move
+            "is_improvement": is_improvement_move,
+            "is_blunder": is_blunder_move
         })
 
     return results
