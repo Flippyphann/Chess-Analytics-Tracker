@@ -38,6 +38,10 @@ def is_top_5_move(board: chess.Board, move: str, top_moves: list[chess.Move]) ->
 def is_improvement(evaluation_change: float) -> bool:
     return evaluation_change > 0
 
+# Checks if the player's position worsened after the move.
+def is_worsening(evaluation_change: float) -> bool:
+    return evaluation_change < 0
+
 # Checks if the player's move is a blunder.
 def is_blunder(evaluation_loss: float) -> bool:
     return evaluation_loss >= 2
