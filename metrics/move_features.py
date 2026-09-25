@@ -45,3 +45,9 @@ def is_worsening(evaluation_change: float) -> bool:
 # Checks if the player's move is a blunder.
 def is_blunder(evaluation_loss: float) -> bool:
     return evaluation_loss >= 2
+
+# Checks if the player's move is a capture.
+def is_capture(board: chess.Board, move: str) -> bool:
+    played_move = board.parse_san(move)
+
+    return board.is_capture(played_move)
