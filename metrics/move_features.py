@@ -51,3 +51,9 @@ def is_capture(board: chess.Board, move: str) -> bool:
     played_move = board.parse_san(move)
 
     return board.is_capture(played_move)
+
+# Checks if the player's move gives a check.
+def is_check(board: chess.Board, move: str) -> bool:
+    played_move = board.parse_san(move)
+
+    return board.gives_check(played_move)
