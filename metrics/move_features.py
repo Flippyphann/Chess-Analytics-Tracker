@@ -57,3 +57,9 @@ def is_check(board: chess.Board, move: str) -> bool:
     played_move = board.parse_san(move)
 
     return board.gives_check(played_move)
+
+# Checks if the player's move is a castle.
+def is_castle(board: chess.Board, move: str) -> bool:
+    played_move = board.parse_san(move)
+
+    return board.is_castling(played_move)

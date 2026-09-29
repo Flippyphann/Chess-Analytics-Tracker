@@ -1,7 +1,7 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import (is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move, is_improvement, is_blunder, is_worsening, is_capture, is_check)
+from metrics.move_features import (is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move, is_improvement, is_blunder, is_worsening, is_capture, is_check, is_castle)
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -90,6 +90,9 @@ def analyze_game(engine, game: Game):
             move.san
         )
 
+        # Checks if the move is a castling move.
+        is_castle_move = is_castle(board, move.san)
+
         # Plays the player's move on the board.
         board.push_san(move.san)
 
@@ -141,7 +144,8 @@ def analyze_game(engine, game: Game):
             "is_worsening": is_worsening_move,
             "is_blunder": is_blunder_move,
             "is_capture": is_capture_move,
-            "is_check": is_check_move
+            "is_check": is_check_move,
+            "is_castle": is_castle_move
         })
 
     return results
