@@ -63,3 +63,8 @@ def is_castle(board: chess.Board, move: str) -> bool:
     played_move = board.parse_san(move)
 
     return board.is_castling(played_move)
+
+def is_promotion(board: chess.Board, move: str) -> bool:
+    played_move = board.parse_san(move)
+
+    return board.is_promotion(played_move)
