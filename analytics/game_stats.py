@@ -178,3 +178,44 @@ def average_castling_move(game_results: list[list[dict]]) -> float:
                 break
 
     return sum(castling_moves) / len(castling_moves)
+
+
+# Calculates the percentage of moves that were critical.
+def critical_move_rate(results: list[dict]) -> float:
+    critical_moves = 0
+
+    for result in results:
+        if result["is_critical"]:
+            critical_moves += 1
+
+    return (critical_moves / len(results)) * 100
+
+
+# Calculates the percentage of critical moves that improved the player's position.
+def critical_improvement_rate(results: list[dict]) -> float:
+    critical_moves = 0
+    critical_improvements = 0
+
+    for result in results:
+        if result["is_critical"]:
+            critical_moves += 1
+
+            if result["is_improvement"]:
+                critical_improvements += 1
+
+    return (critical_improvements / critical_moves) * 100
+
+
+# Calculates the percentage of critical moves that worsened the player's position.
+def critical_worsening_rate(results: list[dict]) -> float:
+    critical_moves = 0
+    critical_worsening = 0
+
+    for result in results:
+        if result["is_critical"]:
+            critical_moves += 1
+
+            if result["is_worsening"]:
+                critical_worsening += 1
+
+    return (critical_worsening / critical_moves) * 100
