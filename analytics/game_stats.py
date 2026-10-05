@@ -140,3 +140,41 @@ def black_win_rate(games: list[Game], username: str) -> float:
                 black_wins += 1
 
     return (black_wins / black_games) * 100
+
+
+# Calculates the average number of checks per game.
+def checks_per_game(game_results: list[list[dict]]) -> float:
+    total_checks = 0
+
+    for results in game_results:
+        for result in results:
+            if result["is_check"]:
+                total_checks += 1
+
+    return total_checks / len(game_results)
+
+
+# Calculates the percentage of games in which the player castled.
+def castling_frequency(game_results: list[list[dict]]) -> float:
+    games_castled = 0
+
+    for results in game_results:
+        for result in results:
+            if result["is_castle"]:
+                games_castled += 1
+                break
+
+    return (games_castled / len(game_results)) * 100
+
+
+# Calculates the average move number on which the player castled.
+def average_castling_move(game_results: list[list[dict]]) -> float:
+    castling_moves = []
+
+    for results in game_results:
+        for result in results:
+            if result["is_castle"]:
+                castling_moves.append(result["move_number"])
+                break
+
+    return sum(castling_moves) / len(castling_moves)
