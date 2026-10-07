@@ -64,6 +64,7 @@ def is_castle(board: chess.Board, move: str) -> bool:
 
     return board.is_castling(played_move)
 
+# Checks if the player's move is a piece promotion.
 def is_promotion(board: chess.Board, move: str) -> bool:
     played_move = board.parse_san(move)
 
