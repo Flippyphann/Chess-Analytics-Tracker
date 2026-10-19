@@ -69,3 +69,18 @@ def is_promotion(board: chess.Board, move: str) -> bool:
     played_move = board.parse_san(move)
 
     return board.is_promotion(played_move)
+
+# Checks if the current position is stalemate
+def is_stalemate(board: chess.Board) -> bool:
+    return board.is_stalemate()
+
+# Checks if neither side has sufficient winning material
+def is_insufficient_material(board: chess.Board) -> bool:
+    return board.is_insufficient_material()
+
+# Checks if the given pseudo-legal move is an en passant capture.
+def is_en_passant(board: chess.Board, move: str) -> bool:
+    played_move = board.parse_san(move)
+
+    return board.is_en_passant(played_move)
+

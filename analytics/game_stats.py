@@ -219,3 +219,111 @@ def critical_worsening_rate(results: list[dict]) -> float:
                 critical_worsening += 1
 
     return (critical_worsening / critical_moves) * 100
+
+
+# NOTE: most of these have to be considered as both from the dark and light pieces respectively
+
+## Create opening/middlegame/endgame metrics
+## Create an aggression index (sacrifices, attacking moves, checks played -> per total moves)
+## Openings faced (and winrate versus)
+## Openings used
+## Loss due to/ win due to
+## Find how much time is used for each move: clock()
+## Find how long is takes the user to get to -1 or -2 evaluation
+## What percentage of games reach endgame
+## Depth of opening (if played)
+## Number of mistakes as time dwindles down?
+## Accuracy in time pressure
+## Find if spending more time on a move makes a difference for the user in terms of accuracy
+## Missed tactics?
+
+#    DEFINE TACTIC      #
+## Tactical opportunities created/found
+## Tactical findings -> converted to win
+## Figure out if user has a positional or tactical preference in playstyle
+
+## Pieces left hanging
+## Pieces left hanging by opponent, but wasn't captured
+## Compare doubled pawns versus user's win rate
+## Compared passed pawns versus user's win rate
+## Winrate of player when down -2 evaluation at any point in the game
+## Winrate of player when up +2 evaluation at any points in the game
+## Winrate as the first player to reach an 'advantage' (like +0.5 or 1)
+## ^^ How quickly did the user lose this advantage, in games that this did happen.
+## ^^ If so, how often did the user recover from their mistakes
+## How often does the user punish mistakes made by the opponent
+## Include opponents metrics alongside the user, sort of like leetify and faceit stats for cs2.
+
+
+# Not as important *
+## piece activity/ king safety/ center control
+## Find maximum evaluation advantage reached
+
+## Average evaluation after leaving theory
+
+## winrate when taken out of opening theory/ prep.
+## Opening diversity
+## Endgame winrate
+## Drawn endgames per total endgames
+## Lost endgames won (losing position objectively to winning)
+## Tablebase accuracy and tablebase conversion
+
+## Find tendency to make mistakes in winning positions
+## Accuracy against higher rated player
+## Accuracy against 'more games played recently' player
+
+
+## Risk tolerance
+## Material imbalance frequency
+## Draw rate per total games played
+## "Comeback" rate after worse position
+## "ACPL" over last 100 games
+
+
+## Track opening theory and endgame conversion growth
+## Largest evaluation swing of the game
+## Win probability over time
+## Create a 'game complexity score'
+## Track volatility (how often did the evaluation change dramatically)
+
+# BINARY METRICS #
+## Were queens traded during the game?
+## Stalemates per total games
+## Stalemates caused per total games
+## Was opponent rated higher or lower
+
+
+
+# EXTRA/FUN METRICS #
+## Time of day of game played: clock()
+## Self-initiated trading per trades played
+## Mentioned already, but does time control affect the user
+## Whatever this means: Do you choose sharp or simple continuations
+## Whatever this means: How well your pieces support each other
+## Number of moves forcing difficult defensive responses
+## Value generated per move by each piece
+## Performance in equal positions under one minute remaining
+
+
+
+
+#    GOALS     #
+## Can this program give a concurrent (to a ongoing chess game) percent chance of winning or losing based on the
+## user's previous data. Like it starts at 50/50 but based on if the user sucks at the opening, or doubled their pawns,
+## or created a tactical edge, their percentage would go up and down as they make their move. This would be different
+## from the evaluation bar in chess.com because it factors in the player's actual strengths and weaknesses, not just
+## what the engine thinks is a won or lost position.
+
+
+## Create an 'mbti'-type thing for the player's chess.com stats. This would include this like positional/tactical player,
+## passive/aggresive, clutch/not clutch, things like that. It would be a fun way to measure player's playstyle
+
+## In addition to the idea above, I was thinking to make something similar but unrelated to mbti. It's something that
+## derived from poker, where very player can be categorized into 4 animals: monkey, fish, etc. Thia is a lessered version
+## of the mbti idea, but maybe it could be better for the project idk. The app i use for poker is called offsuit and it
+## has a lot of cool data and metrics for poker that I want to implement to my project.
+
+
+
+
+

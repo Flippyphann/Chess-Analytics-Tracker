@@ -1,7 +1,8 @@
 import chess
 import chess.engine
 from models.game import Game
-from metrics.move_features import (is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move, is_improvement, is_blunder, is_worsening, is_capture, is_check, is_castle, is_promotion)
+from metrics.move_features import (is_best_move, classify_move, is_critical, is_top_3_move, is_top_5_move,
+is_improvement, is_blunder, is_worsening, is_capture, is_check, is_castle, is_promotion, is_en_passant)
 
 
 STOCKFISH_PATH = "/opt/homebrew/bin/stockfish"
@@ -12,39 +13,44 @@ def create_engine():
     return chess.engine.SimpleEngine.popen_uci(STOCKFISH_PATH)
 
 # Analyzes the current position on the board.
-def analyze_position(engine, board: chess.Board, perspective: chess.Color):
-    results = engine.analyse(
-        board,
-        chess.engine.Limit(depth = 15),
-        multipv = 5
-    )
 
-    # Grabs the best move recommended by Stockfish's principal variation (PV).
-    best_move = results[0]["pv"][0]
 
-    # Gets the evaluation from the player's perspective (White/Black).
-    evaluation = results[0]["score"].pov(perspective)
+def analyze_position(engine: chess.engine.SimpleEngine, board: chess.Board, perspective: chess.Color) -> dict:
+    if board.is_checkmate():
+        score = chess.engine.PovScore(chess.engine.Mate(-1), board.turn)
+        return {
+            "best_move": None,
+            "evaluation": score.pov(perspective),
+            "top_3_moves": [],
+            "top_5_moves": []
+        }
 
-    # Gets Stockfish's top 3 recommended moves.
-    top_3_moves = []
+    if board.is_game_over():
+        score = chess.engine.PovScore(chess.engine.Cp(0), chess.WHITE)
+        return {
+            "best_move": None,
+            "evaluation": score.pov(perspective),
+            "top_3_moves": [],
+            "top_5_moves": []
+        }
+
+    results = engine.analyse(board, chess.engine.Limit(depth=15), multipv=5)
+
+    top_moves: list[chess.Move] = []
 
     for result in results:
-        top_3_moves.append(result["pv"][0])
+        pv = result.get("pv")
+        if pv:
+            top_moves.append(pv[0])
 
-        if len(top_3_moves) == 3:
-            break
-
-    # Gets Stockfish's top 5 recommended moves.
-    top_5_moves = []
-    for result in results:
-        top_5_moves.append(result["pv"][0])
-
+    if not top_moves:
+        raise RuntimeError("Stockfish returned no candidate moves.")
 
     return {
-        "best_move": best_move,
-        "evaluation": evaluation,
-        "top_3_moves": top_3_moves,
-        "top_5_moves": top_5_moves
+        "best_move": top_moves[0],
+        "evaluation": results[0]["score"].pov(perspective),
+        "top_3_moves": top_moves[:3],
+        "top_5_moves": top_moves[:5]
     }
 
 # Analyzes every move in a game.
@@ -54,15 +60,20 @@ def analyze_game(engine, game: Game):
 
     for move in game.moves:
 
+        # Prevents the loop from attempting to analyze moves after the game has ended.
+        if board.is_game_over():
+            break
+
         # Analyzes the position before the move.
         result_before = analyze_position(engine, board, board.turn)
 
         # Checks if played move is best move recommended by engine.
-        is_best = is_best_move(
-            board,
-            move.san,
-            result_before["best_move"]
-        )
+        best_move = result_before["best_move"]
+
+        if best_move is None:
+            break
+
+        is_best = is_best_move(board, move.san, best_move)
 
         # Checks if played move is one of Stockfish's top 5 moves.
         is_top_5 = is_top_5_move(
@@ -93,6 +104,9 @@ def analyze_game(engine, game: Game):
         # Checks if the move is a castling move.
         is_castle_move = is_castle(board, move.san)
 
+        # Checks if the given pseudo-legal move is an en passant capture.
+        is_en_passant_move = is_en_passant(board, move.san)
+
         # Checks if the player's move is a promotion.
         is_promotion_move = is_promotion(
             board,
@@ -102,7 +116,10 @@ def analyze_game(engine, game: Game):
         # Plays the player's move on the board.
         board.push_san(move.san)
 
-        # Analyzes the position after the move.
+        # Check whether the move ended the game.
+        is_stalemate_game = board.is_stalemate()
+        is_insufficient_material_game = board.is_insufficient_material()
+
         result_after = analyze_position(engine, board, not board.turn)
 
         # Calculates how much the evaluation changed, in pawns.
@@ -132,7 +149,6 @@ def analyze_game(engine, game: Game):
         # Checks if the player's move is a blunder.
         is_blunder_move = is_blunder(evaluation_loss)
 
-
         results.append({
             "move_number": move.move_number,
             "move": move.san,
@@ -152,7 +168,10 @@ def analyze_game(engine, game: Game):
             "is_capture": is_capture_move,
             "is_check": is_check_move,
             "is_castle": is_castle_move,
-            "is_promotion": is_promotion_move
+            "is_promotion": is_promotion_move,
+            "is_en_passant": is_en_passant_move,
+            "is_stalemate": is_stalemate_game,
+            "is_insufficient_material": is_insufficient_material_game
         })
 
     return results
